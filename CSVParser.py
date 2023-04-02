@@ -4,8 +4,6 @@ from datetime import datetime, timedelta
 
 EUR_TO_USD = 2
 AUD_TO_USD = 3
-DIVIDE_BY_HUNDRED = 100
-DIVIDE_BY_THOUSAND = 1000
 
 def getDataFromCSV(filenameToJson, filenameSearch):
     """
@@ -112,7 +110,7 @@ def createOrder(row, ordersId, df_toSearch):
         'OrderDate': formatDateType(row.ProcessorName, row.MerchantName, row.OrderDate),
         'MerchantName': row.MerchantName,
         'Address': row.Address,
-        'ReasonCatadory': processor,
+        'ReasonCategory': processor,
         'AmountUSD': int(calculate_amount_usd(row.Amount, row.Currency, row.MerchantName, row.ProcessorName)),
         "ProcessingDate": formatDateType(row.ProcessorName, row.MerchantName, row.OrderDate, 3)
     }
@@ -143,7 +141,7 @@ def createDuplicateOrder(row, df_toSearch):
         'OrderDate': formatDateType(row.ProcessorName, row.MerchantName, row.OrderDate),
         'MerchantName': row.MerchantName,
         'Address': row.Address,
-        'ReasonCatadory': processor,
+        'ReasonCategory': processor,
         'AmountUSD': int(calculate_amount_usd(row.Amount, row.Currency, row.MerchantName, row.ProcessorName)),
         "ProcessingDate": formatDateType(row.ProcessorName, row.MerchantName, row.OrderDate, 3)
     }
@@ -213,9 +211,9 @@ def calculate_amount_usd(amount, currency, merchantName, processor):
 
     if(processor == 'VISA'):
         if merchantName in ['MyBook', 'MyFlight']:
-            amountUSD = amountUSD / DIVIDE_BY_HUNDRED
+            amountUSD = amountUSD / 100
         elif merchantName in ['MyShop']:
-            amountUSD = amountUSD / DIVIDE_BY_THOUSAND
+            amountUSD = amountUSD / 1000
 
     return amountUSD
 
@@ -237,3 +235,24 @@ def isInt(reasonCode):
     if reasonCode % 1 != 0:
         return reasonCode
     return int(reasonCode)
+
+def convert_orders_to_json(orders_dict, orders_dict_duplicate, outputPath):
+    """
+    Converts two dictionaries of orders to JSON files and prints the location of the output files.
+
+    Args:
+        orders_dict (dict): A dictionary containing orders.
+        orders_dict_duplicate (dict): A dictionary containing duplicate orders.
+        outputPath (str): The desired path for the output files.
+
+    Returns:
+        None
+    """
+    createOutput(orders_dict, '..' + outputPath +'.json')
+    createOutput(orders_dict_duplicate, '..' + outputPath+'_Duplicate.json')
+
+    print(f"The Converted Orders JSON file located at:")
+    print(f"{outputPath}.json")
+    print(f"\n")
+    print(f"The Converted Duplicate Orders JSON file located at:")
+    print(f"{outputPath}_Duplicate.json")
